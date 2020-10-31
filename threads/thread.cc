@@ -41,6 +41,9 @@ Thread::Thread(char* threadName)
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
+    uid = getuid();
+    tid = incrementalTID++;
+    DEBUG('t', "Created thread \"%s\", uid: %d, tid: %d\n", name, uid, tid);
 }
 
 //----------------------------------------------------------------------
@@ -318,3 +321,15 @@ Thread::RestoreUserState()
 	machine->WriteRegister(i, userRegisters[i]);
 }
 #endif
+
+int
+Thread::getUID()
+{
+    return uid;
+}
+
+int
+Thread::getTID()
+{
+    return tid;
+}

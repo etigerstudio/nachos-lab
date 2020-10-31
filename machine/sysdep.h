@@ -64,6 +64,7 @@ int abs(int i);
 
 #include <stdio.h>		// for printf, fprintf
 #include <string.h>		// for DEBUG, etc.
+#include <unistd.h>     // for getuid()
 }
 
 #endif // SYSDEP_H
