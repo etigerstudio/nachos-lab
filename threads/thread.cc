@@ -43,6 +43,7 @@ Thread::Thread(char* threadName)
 #endif
     uid = getuid();
     tid = incrementalTID++;
+    insertToThreads();
     DEBUG('t', "Created thread \"%s\", uid: %d, tid: %d\n", name, uid, tid);
 }
 
@@ -63,6 +64,7 @@ Thread::~Thread()
     DEBUG('t', "Deleting thread \"%s\"\n", name);
 
     ASSERT(this != currentThread);
+    removeFromThreads();
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }
@@ -332,4 +334,62 @@ int
 Thread::getTID()
 {
     return tid;
+}
+
+void
+Thread::insertToThreads()
+{
+    for (int i = 0; i < MAX_THREAD_COUNT; i++) {
+        if (allThreads[i] == NULL) {
+            allThreads[i] = this;
+            DEBUG('t', "Inserted thread \"%s\" to allThreads[%d]\n", name, i);
+            return;
+        }
+    }
+    DEBUG('t', "Failed to insert thread \"%s\": no empty space found in allThreads[]\n", name);
+    ASSERT(FALSE);
+}
+
+void
+Thread::removeFromThreads()
+{
+    for (int i = 0; i < MAX_THREAD_COUNT; i++) {
+        if (allThreads[i] == this) {
+            allThreads[i] = NULL;
+            DEBUG('t', "Removed thread \"%s\" from allThreads[%d]\n", name, i);
+            return;
+        }
+    }
+    DEBUG('t', "Failed to remove thread \"%s\": not in allThreads[]\n", name);
+    ASSERT(FALSE);
+}
+
+void
+Thread::printTS()
+{
+    printf("TID | Name | UID | Status\n");
+    const char* status;
+    for (int i = 0; i < MAX_THREAD_COUNT; i++) {
+        if (allThreads[i] != NULL) {
+            switch (allThreads[i]->status) {
+                case JUST_CREATED:
+                    status = "JUST_CREATED";
+                    break;
+                case RUNNING:
+                    status = "RUNNING";
+                    break;
+                case READY:
+                    status = "READY";
+                    break;
+                case BLOCKED:
+                    status = "BLOCKED";
+                    break;
+            }
+            printf("%d | %s | %d | %s\n",
+                   allThreads[i]->tid,
+                   allThreads[i]->name,
+                   allThreads[i]->uid,
+                   status);
+        }
+    }
 }

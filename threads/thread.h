@@ -102,6 +102,9 @@ class Thread {
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
 
+    void insertToThreads();
+    void removeFromThreads();
+
   private:
     // some of the private data for this class is listed above
     
@@ -135,6 +138,8 @@ private:
 public:
     int getUID();
     int getTID();
+
+    static void printTS();
 };
 
 // Magical machine-dependent routines, defined in switch.s
