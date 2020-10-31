@@ -10,6 +10,9 @@
 
 #include "copyright.h"
 #include "system.h"
+#ifdef HOST_SPARC
+#include <strings.h>
+#endif
 
 // Dummy functions because C++ can't call member functions indirectly 
 static void NetworkReadPoll(int arg)

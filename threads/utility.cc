@@ -17,7 +17,7 @@
 #ifdef HOST_SPARC
 #include <stdarg.h>
 #else
-#include "/usr/include/stdarg.h"
+#include "stdarg.h"
 #endif
 #endif
 

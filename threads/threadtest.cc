@@ -12,6 +12,9 @@
 #include "copyright.h"
 #include "system.h"
 
+// testnum is set in main.cc
+int testnum = 1;
+
 //----------------------------------------------------------------------
 // SimpleThread
 // 	Loop 5 times, yielding the CPU to another ready thread 
@@ -33,19 +36,37 @@ SimpleThread(int which)
 }
 
 //----------------------------------------------------------------------
-// ThreadTest
+// ThreadTest1
 // 	Set up a ping-pong between two threads, by forking a thread 
 //	to call SimpleThread, and then calling SimpleThread ourselves.
 //----------------------------------------------------------------------
 
 void
-ThreadTest()
+ThreadTest1()
 {
-    DEBUG('t', "Entering SimpleTest");
+    DEBUG('t', "Entering ThreadTest1");
 
     Thread *t = new Thread("forked thread");
 
     t->Fork(SimpleThread, 1);
     SimpleThread(0);
+}
+
+//----------------------------------------------------------------------
+// ThreadTest
+// 	Invoke a test routine.
+//----------------------------------------------------------------------
+
+void
+ThreadTest()
+{
+    switch (testnum) {
+    case 1:
+	ThreadTest1();
+	break;
+    default:
+	printf("No test specified.\n");
+	break;
+    }
 }
 

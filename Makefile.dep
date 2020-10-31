@@ -8,18 +8,20 @@
 # Also, you need to edit the Makefile in the bin subdirectory.
 
 # DEC MIPS, Ultrix
-HOST = -DHOST_MIPS
+# HOST = -DHOST_MIPS
 
 # SUN SPARC, Sun 4.xx 
 # HOST = -DHOST_SPARC -DHOST_IS_BIG_ENDIAN
+# LDFLAGS = -lsocket -lnls
 
 # HP PA-RISC, HP_UX
 # HOST = -DHOST_SNAKE -DHOST_IS_BIG_ENDIAN
 
 # 386, 386BSD Unix, or NetBSD Unix (available via anon ftp 
 #    from agate.berkeley.edu)
-# HOST = -DHOST_i386
-# CPP=/usr/bin/cpp
+# also, Linux
+HOST = -DHOST_i386
+LDFLAGS =
 
 # slight variant for 386 FreeBSD
 # HOST = -DHOST_i386 -DFreeBSD

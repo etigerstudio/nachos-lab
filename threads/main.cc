@@ -53,6 +53,9 @@
 #include "utility.h"
 #include "system.h"
 
+#ifdef THREADS
+extern int testnum;
+#endif
 
 // External functions used by this file
 
@@ -85,6 +88,19 @@ main(int argc, char **argv)
     (void) Initialize(argc, argv);
     
 #ifdef THREADS
+    for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
+      argCount = 1;
+      switch (argv[0][1]) {
+      case 'q':
+        testnum = atoi(argv[1]);
+        argCount++;
+        break;
+      default:
+        testnum = 1;
+        break;
+      }
+    }
+
     ThreadTest();
 #endif
 

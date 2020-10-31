@@ -18,7 +18,9 @@
 
 #include "copyright.h"
 #include "post.h"
-
+#ifdef HOST_SPARC
+#include <strings.h>
+#endif
 //----------------------------------------------------------------------
 // Mail::Mail
 //      Initialize a single mail message, by concatenating the headers to

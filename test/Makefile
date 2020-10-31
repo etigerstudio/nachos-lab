@@ -12,31 +12,33 @@
 
 # if you are cross-compiling, you need to point to the right executables
 # and change the flags to ld and the build procedure for as
-# GCCDIR = ~/gnu/local/decstation-ultrix/bin/
-# LDFLAGS = -T script -N
-# ASFLAGS = -mips
-# CPPFLAGS = $(INCDIR)
 
+GCCDIR = ../../../gnu-decstation-ultrix/decstation-ultrix/2.95.3/
+
+LDFLAGS = -T script -N
+ASFLAGS = -mips2
+CPPFLAGS = $(INCDIR)
 
 # if you aren't cross-compiling:
-GCCDIR =
-LDFLAGS = -N -T 0
-ASFLAGS =
-CPPFLAGS = -P $(INCDIR)
+# GCCDIR =
+# LDFLAGS = -N -T 0
+# ASFLAGS =
+# CPPFLAGS = -P $(INCDIR)
 
+PATH = $(GCCDIR):/lib:/usr/bin:/bin
 
-CC = $(GCCDIR)gcc
+CC = $(GCCDIR)gcc -B../../../gnu-decstation-ultrix/
 AS = $(GCCDIR)as
 LD = $(GCCDIR)ld
 
-CPP = /lib/cpp
+CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
 all: halt shell matmult sort
 
 start.o: start.s ../userprog/syscall.h
-	$(CPP) $(CPPFLAGS) start.s > strt.s
+	$(CPP) $(CPPFLAGS) start.c > strt.s
 	$(AS) $(ASFLAGS) -o start.o strt.s
 	rm strt.s
 

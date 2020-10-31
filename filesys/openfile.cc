@@ -15,6 +15,9 @@
 #include "filehdr.h"
 #include "openfile.h"
 #include "system.h"
+#ifdef HOST_SPARC
+#include <strings.h>
+#endif
 
 //----------------------------------------------------------------------
 // OpenFile::OpenFile

@@ -74,7 +74,7 @@ Interrupt::Interrupt()
 Interrupt::~Interrupt()
 {
     while (!pending->IsEmpty())
-	delete pending->Remove();
+	delete (PendingInterrupt *)pending->Remove();
     delete pending;
 }
 

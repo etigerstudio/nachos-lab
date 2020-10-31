@@ -19,6 +19,9 @@
 #include "system.h"
 #include "addrspace.h"
 #include "noff.h"
+#ifdef HOST_SPARC
+#include <strings.h>
+#endif
 
 //----------------------------------------------------------------------
 // SwapHeader
