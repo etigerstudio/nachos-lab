@@ -32,7 +32,8 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* threadName)
+void
+Thread::construct(char* threadName, int priority)
 {
     name = threadName;
     stackTop = NULL;
@@ -43,8 +44,19 @@ Thread::Thread(char* threadName)
 #endif
     uid = getuid();
     tid = incrementalTID++;
+    this->priority = priority;
     insertToThreads();
-    DEBUG('t', "Created thread \"%s\", uid: %d, tid: %d\n", name, uid, tid);
+    DEBUG('t', "Created thread \"%s\", uid: %d, tid: %d, p: %d\n", name, uid, tid, priority);
+}
+
+Thread::Thread(char* threadName)
+{
+    construct(threadName, 0);
+}
+
+Thread::Thread(char* threadName, int priority)
+{
+    construct(threadName, priority);
 }
 
 //----------------------------------------------------------------------
@@ -185,10 +197,10 @@ Thread::Yield ()
     ASSERT(this == currentThread);
     
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    
+
+    scheduler->ReadyToRun(this);
     nextThread = scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	scheduler->ReadyToRun(this);
 	scheduler->Run(nextThread);
     }
     (void) interrupt->SetLevel(oldLevel);
@@ -392,4 +404,14 @@ Thread::printTS()
                    status);
         }
     }
+}
+
+void
+Thread::setPriority(int priority) {
+    this->priority = priority;
+}
+
+int
+Thread::getPriority() {
+    return priority;
 }

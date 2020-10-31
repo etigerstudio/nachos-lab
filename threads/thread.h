@@ -81,7 +81,8 @@ class Thread {
     int machineState[MachineStateSize];  // all registers except for stackTop
 
   public:
-    Thread(char* debugName);		// initialize a Thread 
+    Thread(char* debugName);		// initialize a Thread
+    Thread(char* debugName, int priority);		// initialize a Thread with priority
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted
 					// must not be running when delete 
@@ -133,11 +134,15 @@ class Thread {
 #endif
 
 private:
-    int uid, tid;
+    int uid, tid, priority;
+    void construct(char* threadName, int priority);
 
 public:
     int getUID();
     int getTID();
+
+    void setPriority(int priority);
+    int getPriority();
 
     static void printTS();
 };

@@ -28,9 +28,24 @@ void
 SimpleThread(int which)
 {
     int num;
-    
+
     for (num = 0; num < 5; num++) {
-	printf("*** thread %d looped %d times\n", which, num);
+        printf("*** thread %d looped %d times\n", which, num);
+        currentThread->Yield();
+    }
+}
+
+void
+HighInLowThread(int which)
+{
+    int num;
+
+    for (num = 0; num < 5; num++) {
+        printf("*** thread %d looped %d times\n", which, num);
+        if (num == 3) {
+            Thread* t = new Thread("T1-4", 4);
+            t->Fork(SimpleThread, 1);
+        }
         currentThread->Yield();
     }
 }
@@ -93,6 +108,41 @@ ThreadTest3()
 }
 
 //----------------------------------------------------------------------
+// ThreadTest4
+// 	Create threads with priority 5341.
+//----------------------------------------------------------------------
+
+void
+ThreadTest4()
+{
+    DEBUG('t', "Entering ThreadTest4\n");
+
+    Thread *t05 = new Thread("T0-5", 5);
+    t05->Fork(SimpleThread, 0);
+    Thread *t13 = new Thread("T1-3", 3);
+    t13->Fork(SimpleThread, 1);
+    Thread *t24 = new Thread("T2-4", 4);
+    t24->Fork(SimpleThread, 2);
+    Thread *t35 = new Thread("T3-5", 1);
+    t35->Fork(SimpleThread, 3);
+}
+
+//----------------------------------------------------------------------
+// ThreadTest5
+// 	Create a thread with priority 5, which spawns another thread
+//  with priority 4 hereafter.
+//----------------------------------------------------------------------
+
+void
+ThreadTest5()
+{
+    DEBUG('t', "Entering ThreadTest4\n");
+
+    Thread *t = new Thread("T0-5", 5);
+    t->Fork(HighInLowThread, 0);
+}
+
+//----------------------------------------------------------------------
 // ThreadTest
 // 	Invoke a test routine.
 //----------------------------------------------------------------------
@@ -109,7 +159,13 @@ ThreadTest()
     break;
     case 3:
     ThreadTest3();
-	break;
+    break;
+    case 4:
+    ThreadTest4();
+    break;
+    case 5:
+    ThreadTest5();
+    break;
     default:
 	printf("No test specified.\n");
 	break;
