@@ -53,6 +53,46 @@ ThreadTest1()
 }
 
 //----------------------------------------------------------------------
+// ThreadTest2
+// 	Continously creating 128 new threads, expectedly resulting in
+//  triggering assertion for exceeding max thread number.
+//----------------------------------------------------------------------
+
+void
+ThreadTest2()
+{
+    DEBUG('t', "Entering ThreadTest2\n");
+
+    for (int i = 0; i < MAX_THREAD_COUNT; i++) {
+        char name[13];
+        sprintf(name, "%dth thread", i + 2);
+        Thread *t = new Thread(name);
+    }
+
+    printf("128 threads created.\n");
+}
+
+//----------------------------------------------------------------------
+// ThreadTest3
+// 	Create 10 threads, then print out thread status.
+//----------------------------------------------------------------------
+
+void
+ThreadTest3()
+{
+    DEBUG('t', "Entering ThreadTest3\n");
+
+    for (int i = 0; i < 10; i++) {
+        char* name = new char[13];
+        sprintf(name, "%dth thread", i);
+        Thread *t = new Thread(name);
+    }
+
+    printf("10 threads created.\n");
+    Thread::printTS();
+}
+
+//----------------------------------------------------------------------
 // ThreadTest
 // 	Invoke a test routine.
 //----------------------------------------------------------------------
@@ -63,6 +103,12 @@ ThreadTest()
     switch (testnum) {
     case 1:
 	ThreadTest1();
+	break;
+    case 2:
+    ThreadTest2();
+    break;
+    case 3:
+    ThreadTest3();
 	break;
     default:
 	printf("No test specified.\n");

@@ -40,6 +40,7 @@ PostOffice *postOffice;
 extern void Cleanup();
 
 int incrementalTID = 0;
+Thread *allThreads[MAX_THREAD_COUNT];
 
 //----------------------------------------------------------------------
 // TimerInterruptHandler
