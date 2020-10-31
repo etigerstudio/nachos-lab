@@ -39,6 +39,7 @@ PostOffice *postOffice;
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup();
 
+int incrementalTID = 0;
 
 //----------------------------------------------------------------------
 // TimerInterruptHandler

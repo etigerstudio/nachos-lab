@@ -128,6 +128,13 @@ class Thread {
 
     AddrSpace *space;			// User code this thread is running.
 #endif
+
+private:
+    int uid, tid;
+
+public:
+    int getUID();
+    int getTID();
 };
 
 // Magical machine-dependent routines, defined in switch.s
