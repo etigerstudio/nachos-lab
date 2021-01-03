@@ -53,11 +53,46 @@ ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
 
-    if ((which == SyscallException) && (type == SC_Halt)) {
-	DEBUG('a', "Shutdown, initiated by user program.\n");
-   	interrupt->Halt();
+    if (which == SyscallException) {
+        switch (type) {
+            case SC_Halt:
+                DEBUG('a', "Shutdown, initiated by user program.\n");
+                interrupt->Halt();
+                break;
+            case SC_Exit:
+            {
+                int code = machine->ReadRegister(4);
+                printf("SYSCALL: Exiting, exit code: %d", code);
+                Exit(code);
+                break;
+            }
+            case SC_Create:
+            {
+                int address = machine->ReadRegister(4);
+                char name[10];
+                int pos = 0, data;
+                while (1) {
+                    machine->ReadMem(address + pos, 1, &data);
+                    if (data == 0) {
+                        name[pos] = '\0';
+                        break;
+                    }
+                    name[pos++] = (char) data;
+                }
+                fileSystem->Create(name, 128);
+                machine->AdvancePC();
+                printf("SYSCALL: Creating a file, name: %s\n", name);
+                break;
+            }
+        }
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }
+}
+
+void Machine::AdvancePC() {
+    WriteRegister(PrevPCReg, registers[PCReg]);
+    WriteRegister(PCReg, registers[PCReg] + sizeof(int));
+    WriteRegister(NextPCReg, registers[NextPCReg] + sizeof(int));
 }

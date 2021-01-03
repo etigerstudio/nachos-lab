@@ -131,6 +131,8 @@ class Machine {
     				// Read or write 1, 2, or 4 bytes of virtual 
 				// memory (at addr).  Return FALSE if a 
 				// correct translation couldn't be found.
+
+    void AdvancePC();
     
     ExceptionType Translate(int virtAddr, int* physAddr, int size,bool writing);
     				// Translate an address, and check for 
