@@ -17,10 +17,10 @@ main()
 	Write(prompt, 2, output);
 
 	i = 0;
-	
+
 	do {
-	
-	    Read(&buffer[i], 1, input); 
+
+	    Read(&buffer[i], 1, input);
 
 	} while( buffer[i++] != '\n' );
 

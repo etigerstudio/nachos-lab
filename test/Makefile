@@ -37,7 +37,7 @@ CFLAGS = -G 0 -c $(INCDIR)
 
 all: halt shell matmult sort syscall
 
-syscall: filetest
+syscall: filetest bossdeng
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -73,3 +73,9 @@ filetest.o: filetest.c
 filetest: filetest.o start.o
 	$(LD) $(LDFLAGS) start.o filetest.o -o filetest.coff
 	../bin/coff2noff filetest.coff filetest
+
+bossdeng.o: bossdeng.c
+	$(CC) $(CFLAGS) -c bossdeng.c
+bossdeng: bossdeng.o start.o
+	$(LD) $(LDFLAGS) start.o bossdeng.o -o bossdeng.coff
+	../bin/coff2noff bossdeng.coff bossdeng
