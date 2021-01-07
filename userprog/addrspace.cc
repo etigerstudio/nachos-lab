@@ -124,6 +124,8 @@ void AddrSpace::MapSegment(Segment seg, OpenFile *executable) {
         int vpn = currentOffset / PageSize;
         int bytesToRead = PageSize - currentOffset % PageSize;
         int paddr = pageTable[vpn].physicalPage * PageSize + currentOffset % PageSize;
+        DEBUG('a', "Addrspace map 1st: phy: %d, bytes: %d, offset: %d\n",
+              paddr, bytesToRead, seg.inFileAddr);
         executable->ReadAt(
                 &(machine->mainMemory[paddr]),
                 bytesToRead,
@@ -138,6 +140,8 @@ void AddrSpace::MapSegment(Segment seg, OpenFile *executable) {
         int paddr = pageTable[vpn].physicalPage * PageSize;
         int bytesToRead = (currentOffset + PageSize <= seg.size) ?
                           PageSize : (seg.size - currentOffset);
+        DEBUG('a', "Addrspace map 2nd: phy: %d, bytes: %d, offset: %d\n",
+              paddr, bytesToRead, offset);
         executable->ReadAt(
                 &(machine->mainMemory[paddr]),
                 bytesToRead,

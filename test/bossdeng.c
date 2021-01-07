@@ -5,6 +5,6 @@
 #include "syscall.h"
 
 int main() {
-    Write("Boss Deng, forever god!", 23, ConsoleOutput);
+    Write("Boss Deng, forever god!\n", 24, ConsoleOutput);
     Exit(0);
 }

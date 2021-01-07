@@ -59,7 +59,7 @@ ExceptionHandler(ExceptionType which) {
     if (which == SyscallException) {
         switch (type) {
             case SC_Halt: {
-                DEBUG('a', "Shutdown, initiated by user program.\n");
+                DEBUG('c', "Shutdown, initiated by user program.\n");
                 interrupt->Halt();
                 break;
             }
@@ -77,7 +77,7 @@ ExceptionHandler(ExceptionType which) {
                 }
                 fileSystem->Create(name, 128);
                 machine->AdvancePC();
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: Creating a file, name: %s\n", name);
+                DEBUG('c', "SYSCALL: Creating a file, name: %s\n", name);
                 break;
             }
             case SC_Open: {
@@ -95,7 +95,7 @@ ExceptionHandler(ExceptionType which) {
                 OpenFile *openfile = fileSystem->Open(name);
                 machine->WriteRegister(2, int(openfile));
                 machine->AdvancePC();
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: Opened a file, name: %s\n", name);
+                DEBUG('c', "SYSCALL: Opened a file, name: %s\n", name);
                 break;
             }
             case SC_Close: {
@@ -103,7 +103,7 @@ ExceptionHandler(ExceptionType which) {
                 OpenFile *openfile = (OpenFile *) fd;
                 delete openfile;
                 machine->AdvancePC();
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: Closed a file, id: %d\n", fd);
+                DEBUG('c', "SYSCALL: Closed a file, id: %d\n", fd);
                 break;
             }
             case SC_Read: {
@@ -116,14 +116,14 @@ ExceptionHandler(ExceptionType which) {
                     for (int i = 0; i < size; ++i)
                         machine->WriteMem(buffer + i, 1, int(getchar()));
                     machine->WriteRegister(2, size);
-                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Read from stdin, bytes read: %d\n", size);
+                    DEBUG('c', "SYSCALL: Read from stdin, bytes read: %d\n", size);
                 } else {
                     char content[size];
                     int result = openfile->Read(content, size);
                     for (int i = 0; i < result; ++i)
                         machine->WriteMem(buffer + i, 1, int(content[i]));
                     machine->WriteRegister(2, result);
-                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Read a file, bytes read: %d\n", result);
+                    DEBUG('c', "SYSCALL: Read a file, bytes read: %d\n", result);
                 }
                 machine->AdvancePC();
                 break;
@@ -134,7 +134,7 @@ ExceptionHandler(ExceptionType which) {
                 int fd = machine->ReadRegister(6);
                 char content[size];
                 int data;
-                printf("SYSCALL: Wrote buffer %d %d %d\n", buffer, size, fd);
+                DEBUG('c', "SYSCALL: Wrote buffer %d %d %d\n", buffer, size, fd);
                 for (int i = 0; i < size; ++i) {
                     machine->ReadMem(buffer + i, 1, &data);
                     content[i] = char(data);
@@ -142,11 +142,11 @@ ExceptionHandler(ExceptionType which) {
                 if (fd == ConsoleOutput) {
                     for (int i = 0; i < size; ++i)
                         putchar(content[i]);
-                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Wrote to stdout, bytes written: %d\n", size);
+                    DEBUG('c', "SYSCALL: Wrote to stdout, bytes written: %d\n", size);
                 } else {
                     OpenFile *openfile = (OpenFile *) fd;
                     openfile->Write(content, size);
-                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Wrote a file, bytes written: %d\n", size);
+                    DEBUG('c', "SYSCALL: Wrote a file, bytes written: %d\n", size);
                 }
                 machine->AdvancePC();
                 break;
@@ -155,19 +155,20 @@ ExceptionHandler(ExceptionType which) {
                 int address = machine->ReadRegister(4);
                 Thread *newThread = new Thread("new thread");
                 newThread->Fork(exec_func, address);
+                currentThread->Yield();
                 machine->WriteRegister(2, newThread->getTID());
                 machine->AdvancePC();
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: exec\n");
+                DEBUG('c', "SYSCALL: exec\n");
                 break;
             }
             case SC_Yield: {
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: yield\n");
+                DEBUG('c', "SYSCALL: yield\n");
                 machine->AdvancePC();
                 currentThread->Yield();
                 break;
             }
             case SC_Join: {
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: join\n");
+                DEBUG('c', "SYSCALL: join\n");
                 int tid = machine->ReadRegister(4);
                 while (allThreads[tid])
                     currentThread->Yield();
@@ -176,7 +177,7 @@ ExceptionHandler(ExceptionType which) {
             }
             case SC_Exit: {
                 int status = machine->ReadRegister(4);
-                printf("SYSCALL: exit, code: %d\n", status);
+                DEBUG('c', "SYSCALL: exit, code: %d\n", status);
                 machine->DeallocPageTable();
                 machine->AdvancePC();
                 currentThread->Finish();
@@ -298,6 +299,7 @@ ExceptionHandler(ExceptionType which) {
                 break;
             }
         }
+        // Fork not implemented yet
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);
         ASSERT(FALSE);
@@ -311,7 +313,7 @@ void Machine::AdvancePC() {
 }
 
 void exec_func(int address) {
-    char name[10];
+    char name[60];
     int pos = 0, data;
     while (1) {
         machine->ReadMem(address + pos, 1, &data);

@@ -219,13 +219,13 @@ void Machine::FreePage(int n) {
 
 int Machine::AllocPage() {
     int n = freeMap->Find();
-    printf("Allocated page: %d\n", n);
+    DEBUG('a', "Allocated page: %d\n", n);
     return n;
 }
 
 void Machine::DeallocPageTable() {
     for (int i = 0; i < pageTableSize; ++i) {
         FreePage(pageTable[i].physicalPage);
-        printf("Freed page: %d\n", pageTable[i].physicalPage);
+        DEBUG('a', "Freed page: %d\n", pageTable[i].physicalPage);
     }
 }

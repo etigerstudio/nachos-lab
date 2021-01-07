@@ -24,16 +24,20 @@ main()
     SpaceId newProc;
     OpenFileId input = ConsoleInput;
     OpenFileId output = ConsoleOutput;
-    char prompt[3], ch, buffer[60];
+    char prompt[7], ch, buffer[60];
     int i;
 
-    prompt[0] = '>';
-    prompt[1] = '>';
-    prompt[2] = '>';
+    prompt[0] = '\360';
+    prompt[1] = '\237';
+    prompt[2] = '\220';
+    prompt[3] = '\266';
+    prompt[4] = '>';
+    prompt[5] = '>';
+    prompt[6] = ' ';
 
     while( 1 )
     {
-        Write(prompt, 3, output);
+	Write(prompt, 7, output);
 
         i = 0;
 

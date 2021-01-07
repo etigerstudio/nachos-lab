@@ -25,14 +25,14 @@ StartProcess(char *filename)
 {
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
-
     if (executable == NULL) {
 	printf("Unable to open file %s\n", filename);
 	return;
     }
-    space = new AddrSpace(executable);    
-    currentThread->space = space;
 
+    DEBUG('a', "inited first user prog\n");
+    space = new AddrSpace(executable);
+    currentThread->space = space;
     delete executable;			// close file
 
     space->InitRegisters();		// set the initial register values
