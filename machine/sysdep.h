@@ -62,6 +62,11 @@ int atoi(const char *str);
 double atof(const char *str);
 int abs(int i);
 
+int system(const char *str);
+int chdir(const char *str) throw();
+int mkdir(const char *str, unsigned int mode);
+int rmdir(const char *str) throw();
+
 #include <stdio.h>		// for printf, fprintf
 #include <string.h>		// for DEBUG, etc.
 #include <unistd.h>     // for getuid()

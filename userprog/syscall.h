@@ -29,6 +29,7 @@
 #define SC_Close	8
 #define SC_Fork		9
 #define SC_Yield	10
+#define SC_Pwd      11
 
 #ifndef IN_ASM
 
@@ -123,6 +124,12 @@ void Fork(void (*func)());
  * or not. 
  */
 void Yield();		
+
+
+/*
+ * 打印当前系统所在目录
+*/
+void Pwd();
 
 #endif /* IN_ASM */
 

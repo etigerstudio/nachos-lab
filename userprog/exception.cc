@@ -179,6 +179,10 @@ ExceptionHandler(ExceptionType which) {
                 currentThread->Finish();
                 break;
             }
+            case SC_Pwd: {
+                system("pwd");
+                break;
+            }
         }
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);

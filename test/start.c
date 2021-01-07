@@ -130,6 +130,14 @@ Yield:
 	j	$31
 	.end Yield
 
+	.globl Pwd
+	.ent	Pwd
+Pwd:
+	addiu $2,$0,SC_Pwd
+	syscall
+	j	$31
+	.end Pwd
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main
