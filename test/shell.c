@@ -9,9 +9,11 @@ int strcmp(const char *str1, const char *str2) {
 }
 
 int strncmp(const char *str1, const char *str2, int n){
-    while(*str1 && *str2 && (*str1 == *str2) && (n --)) {
+    while(*str1 && (*str1 == *str2)) {
         ++ str1;
         ++ str2;
+        if (--n == 0)
+            return 0;
     }
     return *str1 - *str2;
 }
