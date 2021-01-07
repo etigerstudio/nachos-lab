@@ -180,7 +180,9 @@ ExceptionHandler(ExceptionType which) {
                 break;
             }
             case SC_Pwd: {
-                system("pwd");
+                // system("pwd");
+                fileSystem->List();
+                machine->AdvancePC();
                 break;
             }
         }
