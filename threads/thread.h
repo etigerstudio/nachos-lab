@@ -54,6 +54,7 @@
 // Size of the thread's private execution stack.
 // WATCH OUT IF THIS ISN'T BIG ENOUGH!!!!!
 #define StackSize	(4 * 1024)	// in words
+#define CWD_MAX_LENGTH 20
 
 
 // Thread state

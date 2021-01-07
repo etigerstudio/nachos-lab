@@ -117,8 +117,6 @@ extern void DEBUG (char flag, char* format, ...);  	// Print debug message
 #define INVERSE "\033[7m"
 #define ENDC "\033[0m"
 
-#define SYSCALL_DEBUG 'S'
-
 // Color the string using ANSI escape code.
 #define COLORED(color, string) \
     color string ENDC

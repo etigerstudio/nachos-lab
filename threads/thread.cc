@@ -38,7 +38,8 @@ Thread::Thread(char* threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    cwd = "/";
+    cwd = new char[CWD_MAX_LENGTH]{'\0'};
+    cwd[0] = '/';
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
