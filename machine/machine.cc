@@ -212,3 +212,20 @@ void Machine::WriteRegister(int num, int value)
 	registers[num] = value;
     }
 
+
+void Machine::FreePage(int n) {
+    freeMap->Clear(n);
+}
+
+int Machine::AllocPage() {
+    int n = freeMap->Find();
+    printf("Allocated page: %d\n", n);
+    return n;
+}
+
+void Machine::DeallocPageTable() {
+    for (int i = 0; i < pageTableSize; ++i) {
+        FreePage(pageTable[i].physicalPage);
+        printf("Freed page: %d\n", pageTable[i].physicalPage);
+    }
+}

@@ -134,7 +134,7 @@ ExceptionHandler(ExceptionType which) {
                 int fd = machine->ReadRegister(6);
                 char content[size];
                 int data;
-
+                printf("SYSCALL: Wrote buffer %d %d %d\n", buffer, size, fd);
                 for (int i = 0; i < size; ++i) {
                     machine->ReadMem(buffer + i, 1, &data);
                     content[i] = char(data);
@@ -176,7 +176,8 @@ ExceptionHandler(ExceptionType which) {
             }
             case SC_Exit: {
                 int status = machine->ReadRegister(4);
-                DEBUG(SYSCALL_DEBUG, "SYSCALL: exit, code: %d\n", status);
+                printf("SYSCALL: exit, code: %d\n", status);
+                machine->DeallocPageTable();
                 machine->AdvancePC();
                 currentThread->Finish();
                 break;

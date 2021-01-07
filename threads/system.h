@@ -15,6 +15,8 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
+#include "bitmap.h"
+#include "int.h"
 
 // Initialization and cleanup routines
 extern void Initialize(int argc, char **argv); 	// Initialization,
@@ -34,6 +36,7 @@ extern int incrementalTID;
 extern Thread *allThreads[MAX_THREAD_COUNT];
 
 extern bool VERBOSE;
+extern BitMap *freeMap;
 
 #ifdef USER_PROGRAM
 #include "machine.h"

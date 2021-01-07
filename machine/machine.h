@@ -184,6 +184,11 @@ class Machine {
     TranslationEntry *pageTable;
     unsigned int pageTableSize;
 
+    // Free memory managing
+    void FreePage(int n);
+    int AllocPage();
+    void DeallocPageTable();
+
   private:
     bool singleStep;		// drop back into the debugger after each
 				// simulated instruction
