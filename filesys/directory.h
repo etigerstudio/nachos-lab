@@ -19,8 +19,12 @@
 
 #include "openfile.h"
 
-#define FileNameMaxLen 		9	// for simplicity, we assume 
+// #define FileNameMaxLen 		9	// for simplicity, we assume 
 					// file names are <= 9 characters long
+
+// 突破文件长度限制
+#define FileNameMaxLen (((SectorSize - (sizeof(bool) + sizeof(int)) * 10) / sizeof(char)) - 1)
+
 
 // The following class defines a "directory entry", representing a file
 // in the directory.  Each entry gives the name of the file, and where

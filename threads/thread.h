@@ -105,6 +105,9 @@ class Thread {
     void insertToThreads();
     void removeFromThreads();
 
+    void pwd() { printf("%s\n", cwd); }
+    void cd(char *newd) {  }
+
   private:
     // some of the private data for this class is listed above
     
@@ -140,6 +143,7 @@ public:
     int getTID();
 
     static void printTS();
+    char *cwd;
 };
 
 // Magical machine-dependent routines, defined in switch.s

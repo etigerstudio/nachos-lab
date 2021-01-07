@@ -26,11 +26,15 @@
 //
 //	"sector" -- the location on disk of the file header for this file
 //----------------------------------------------------------------------
-
+// openfile.cc
 OpenFile::OpenFile(int sector)
 { 
     hdr = new FileHeader;
     hdr->FetchFrom(sector);
+    // Necessary, because we need to update
+    // FileHeader(i-node) later on.
+    hdr->setHeaderSector(sector);
+    synchDisk->numVisitors[hdr->getHeaderSector()] ++;
     seekPosition = 0;
 }
 
@@ -41,6 +45,9 @@ OpenFile::OpenFile(int sector)
 
 OpenFile::~OpenFile()
 {
+    // Update header info
+    hdr->WriteBack(hdr->getHeaderSector());
+    synchDisk->numVisitors[hdr->getHeaderSector()] --;
     delete hdr;
 }
 
@@ -113,6 +120,8 @@ OpenFile::Write(char *into, int numBytes)
 //			read/written
 //----------------------------------------------------------------------
 
+#define FreeMapSector	0
+
 int
 OpenFile::ReadAt(char *into, int numBytes, int position)
 {
@@ -140,6 +149,9 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
     // copy the part we want
     bcopy(&buf[position - (firstSector * SectorSize)], into, numBytes);
     delete [] buf;
+
+    // Lab5: file header info update
+    hdr->setVisitTime(getCurrentTime());
     return numBytes;
 }
 
@@ -151,8 +163,21 @@ OpenFile::WriteAt(char *from, int numBytes, int position)
     bool firstAligned, lastAligned;
     char *buf;
 
+    // Lab5: dynamic allocate file size
+    // 如果超过了文件长度
+    if (position + numBytes > fileLength) {
+        BitMap *freeMap = new BitMap(NumSectors);
+        OpenFile* freeMapFile = new OpenFile(FreeMapSector);
+        freeMap->FetchFrom(freeMapFile);
+        hdr->ExpandFileSize(freeMap, position + numBytes - fileLength);
+        hdr->WriteBack(hdr->getHeaderSector());
+        freeMap->WriteBack(freeMapFile);
+        delete freeMapFile;
+        fileLength = hdr->FileLength();
+    }
+
     if ((numBytes <= 0) || (position >= fileLength))
-	return 0;				// check request
+	    return 0;				// check request
     if ((position + numBytes) > fileLength)
 	numBytes = fileLength - position;
     DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n", 	
@@ -182,6 +207,8 @@ OpenFile::WriteAt(char *from, int numBytes, int position)
         synchDisk->WriteSector(hdr->ByteToSector(i * SectorSize), 
 					&buf[(i - firstSector) * SectorSize]);
     delete [] buf;
+    hdr->setVisitTime(getCurrentTime());
+    hdr->setModifyTime(getCurrentTime());
     return numBytes;
 }
 

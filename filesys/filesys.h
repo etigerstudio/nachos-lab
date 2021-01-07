@@ -37,7 +37,7 @@
 
 #include "copyright.h"
 #include "openfile.h"
-
+#define FILESYS_STUB
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
@@ -84,6 +84,22 @@ class FileSystem {
     void List();			// List all the files in the file system
 
     void Print();			// List all the files and their contents
+
+	// filesys.h
+	// ld 命令，列出目录下的所有文件
+	// 类似于 ls -d
+	void ListDir(char *name);
+	// 移除目录
+	bool RemoveDir(char* name);
+
+	// 根据文件路径返回目标文件的目录结构
+	void *FindDir(char *filePath);
+	// 根据文件路径查找目标文件是否存在
+	int FindDirSector(char *filePath);
+	// 从管道中读取
+	int ReadPipe(char * data);
+	// 写入管道
+    void WritePipe(char *data,int length);
 
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,

@@ -1,47 +1,19 @@
 #include "syscall.h"
 
 int strcmp(const char *str1, const char *str2) {
-    char *s1 = str1, *s2 = str2;
-    while(*s1 && *s2) {
-        if (*s1 == *s1) {
-            ++s1, ++s2;
-        } else {
-            return *s1 - *s2;
-        }
+    while(*str1 && *str2 && (*str1 == *str2)) {
+        ++ str1;
+        ++ str2;
     }
-    if (*s1) return 1;
-    if (*s2) return -1;
-    return 0;
+    return *str1 - *str2;
 }
 
-
-
-void helpcmd(const char* cmd)
-{
-    Write(cmd, 10, ConsoleOutput);
-}
-
-void Help()
-{
-    // const char *cmds[] = {
-    // "exec     ",
-    // "pwd      ",
-    // "ls       ",
-    // "touch    ",
-    // "uptime   ",
-    // "mkdir    ",
-    // "rm       ",
-    // "rmdir    ",
-    // "mv       ",
-    // "help/?   ",
-    // "exit/quit"
-    // };
-
-    // int numcmd = 12;
-    // int i;
-    // for (i = 0; i < numcmd; i ++) {
-    //     helpcmd(cmds[i]);
-    // }
+int strncmp(const char *str1, const char *str2, int n){
+    while(*str1 && *str2 && (*str1 == *str2) && (n --)) {
+        ++ str1;
+        ++ str2;
+    }
+    return *str1 - *str2;
 }
 
 int
@@ -72,16 +44,45 @@ main()
         buffer[--i] = '\0';
 
         if( i > 0 ) {
-            if (!strcmp("exit", buffer) || !strcmp("quit", buffer)) {
+            Write("Read command: ", 15, output);
+            Write(buffer, i, output);
+            Write("\n", 2, output);
+            if (!strcmp("help", buffer) || !strcmp("?", buffer)) {
+                Help();
+            }
+            else if (!strcmp("exit", buffer) || !strcmp("quit", buffer)) {
                 Write("GoodBye!\n", 10, output);
                 Exit(0);
-            }
-            else if (!strcmp("help", buffer) || !strcmp("?", buffer)) {
-                Help();
+            } else if (!strcmp("halt", buffer)) {
+                Write("System Shut Down\n", 18, output);
+                Halt();
             } else if (!strcmp("pwd", buffer)) {
                 Pwd();
-            }
-            else {
+            } else if (!strcmp("ls", buffer)) {
+                Ls();
+            } else if (!strncmp("cd", buffer, 2)) {
+                Write((buffer + 3), 20, output);
+                Write("\n", 2, output);
+                // Cd((buffer + 3));
+            } else if (!strncmp("touch", buffer, 5)) {
+                Write((buffer + 6), 20, output);
+                Write("\n", 2, output);
+                // Create((buffer + 6));
+            } else if (!strncmp("mkdir", buffer, 5)) {
+                Write((buffer + 6), 20, output);
+                Write("\n", 2, output);
+                // MkDir((buffer + 6));
+            } else if (!strncmp("rm", buffer, 2)) {
+                Write((buffer + 3), 20, output);
+                Write("\n", 2, output);
+                // Remove((buffer + 3));
+            } else if (!strncmp("rmdir", buffer, 2)) {
+                Write((buffer + 6), 20, output);
+                Write("\n", 2, output);
+                // RmDir((buffer + 6));
+            } else if (!strncmp("uptime", buffer, 6)) {
+                Uptime();
+            } else {
                 newProc = Exec(buffer);
                 Join(newProc);
             }

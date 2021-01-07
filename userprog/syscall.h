@@ -30,6 +30,13 @@
 #define SC_Fork		9
 #define SC_Yield	10
 #define SC_Pwd      11
+#define SC_Ls       12
+#define SC_Cd       13
+#define SC_Remove   14
+#define SC_MkDir    15
+#define SC_RmDir    16
+#define SC_Help     17
+#define SC_Uptime   18
 
 #ifndef IN_ASM
 
@@ -130,6 +137,41 @@ void Yield();
  * 打印当前系统所在目录
 */
 void Pwd();
+
+/*
+ * 列出当前工作目录下的文件
+*/
+void Ls();
+
+/*
+ * 改变当前工作目录
+*/
+void Cd();
+
+/*
+ * 创建新目录
+*/
+void MkDir(char *name);
+
+/*
+ * 删除目录
+*/
+void RmDir(char *name);
+
+/*
+ * 删除文件
+*/
+void Remove(char *name);
+
+/*
+ * 打印帮助
+*/
+void Help();
+
+/*
+ * 打印系统运行时间
+*/
+void Uptime();
 
 #endif /* IN_ASM */
 

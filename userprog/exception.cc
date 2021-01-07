@@ -24,6 +24,8 @@
 #include "copyright.h"
 #include "system.h"
 #include "syscall.h"
+// #include "filesys.h"
+// #include "openfile.h"
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -75,7 +77,7 @@ ExceptionHandler(ExceptionType which) {
                 }
                 fileSystem->Create(name, 128);
                 machine->AdvancePC();
-                printf("SYSCALL: Creating a file, name: %s\n", name);
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: Creating a file, name: %s\n", name);
                 break;
             }
             case SC_Open: {
@@ -93,7 +95,7 @@ ExceptionHandler(ExceptionType which) {
                 OpenFile *openfile = fileSystem->Open(name);
                 machine->WriteRegister(2, int(openfile));
                 machine->AdvancePC();
-                printf("SYSCALL: Opened a file, name: %s\n", name);
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: Opened a file, name: %s\n", name);
                 break;
             }
             case SC_Close: {
@@ -101,7 +103,7 @@ ExceptionHandler(ExceptionType which) {
                 OpenFile *openfile = (OpenFile *) fd;
                 delete openfile;
                 machine->AdvancePC();
-                printf("SYSCALL: Closed a file, id: %d\n", fd);
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: Closed a file, id: %d\n", fd);
                 break;
             }
             case SC_Read: {
@@ -114,14 +116,14 @@ ExceptionHandler(ExceptionType which) {
                     for (int i = 0; i < size; ++i)
                         machine->WriteMem(buffer + i, 1, int(getchar()));
                     machine->WriteRegister(2, size);
-                    printf("SYSCALL: Read from stdin, bytes read: %d\n", size);
+                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Read from stdin, bytes read: %d\n", size);
                 } else {
                     char content[size];
                     int result = openfile->Read(content, size);
                     for (int i = 0; i < result; ++i)
                         machine->WriteMem(buffer + i, 1, int(content[i]));
                     machine->WriteRegister(2, result);
-                    printf("SYSCALL: Read a file, bytes read: %d\n", result);
+                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Read a file, bytes read: %d\n", result);
                 }
                 machine->AdvancePC();
                 break;
@@ -140,11 +142,11 @@ ExceptionHandler(ExceptionType which) {
                 if (fd == ConsoleOutput) {
                     for (int i = 0; i < size; ++i)
                         putchar(content[i]);
-                    printf("SYSCALL: Wrote to stdout, bytes written: %d\n", size);
+                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Wrote to stdout, bytes written: %d\n", size);
                 } else {
                     OpenFile *openfile = (OpenFile *) fd;
                     openfile->Write(content, size);
-                    printf("SYSCALL: Wrote a file, bytes written: %d\n", size);
+                    DEBUG(SYSCALL_DEBUG, "SYSCALL: Wrote a file, bytes written: %d\n", size);
                 }
                 machine->AdvancePC();
                 break;
@@ -155,17 +157,17 @@ ExceptionHandler(ExceptionType which) {
                 newThread->Fork(exec_func, address);
                 machine->WriteRegister(2, newThread->getTID());
                 machine->AdvancePC();
-                printf("SYSCALL: exec\n");
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: exec\n");
                 break;
             }
             case SC_Yield: {
-                printf("SYSCALL: yield\n");
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: yield\n");
                 machine->AdvancePC();
                 currentThread->Yield();
                 break;
             }
             case SC_Join: {
-                printf("SYSCALL: join\n");
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: join\n");
                 int tid = machine->ReadRegister(4);
                 while (allThreads[tid])
                     currentThread->Yield();
@@ -174,14 +176,122 @@ ExceptionHandler(ExceptionType which) {
             }
             case SC_Exit: {
                 int status = machine->ReadRegister(4);
-                printf("SYSCALL: exit, code: %d\n", status);
+                DEBUG(SYSCALL_DEBUG, "SYSCALL: exit, code: %d\n", status);
                 machine->AdvancePC();
                 currentThread->Finish();
                 break;
             }
             case SC_Pwd: {
-                // system("pwd");
-                fileSystem->List();
+                #ifdef FILESYS_STUB
+                system("pwd");
+                #else
+                currentThread->pwd();
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_Ls: {
+                #ifdef FILESYS_STUB
+                system("ls");
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_Cd: {
+                #ifdef FILESYS_STUB
+                int address = machine->ReadRegister(4);
+                char name[20];
+                int pos = 0;
+                int data;
+                while(1) {
+                    machine->ReadMem(address + pos, 1, &data);
+                    if (data == 0) {
+                        name[pos] = '\0';
+                        break;
+                    }
+                    name[pos++] = (char) data;
+                }
+                chdir(name);
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_Remove: {
+                #ifdef FILESYS_STUB
+                int address = machine->ReadRegister(4);
+                char name[20];
+                int pos = 0;
+                int data;
+                while(1) {
+                    machine->ReadMem(address + pos, 1, &data);
+                    if (data == 0) {
+                        name[pos] = '\0';
+                        break;
+                    }
+                    name[pos++] = (char) data;
+                }
+                fileSystem->Remove(name);
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_MkDir: {
+                #ifdef FILESYS_STUB
+                int address = machine->ReadRegister(4);
+                char name[20];
+                int pos = 0;
+                int data;
+                while(1) {
+                    machine->ReadMem(address + pos, 1, &data);
+                    if (data == 0) {
+                        name[pos] = '\0';
+                        break;
+                    }
+                    name[pos++] = (char) data;
+                }
+                mkdir(name, 0777);
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_RmDir: {
+                #ifdef FILESYS_STUB
+                int address = machine->ReadRegister(4);
+                char name[20];
+                int pos = 0;
+                int data;
+                while(1) {
+                    machine->ReadMem(address + pos, 1, &data);
+                    if (data == 0) {
+                        name[pos] = '\0';
+                        break;
+                    }
+                    name[pos++] = (char) data;
+                }
+                rmdir(name);
+                #endif
+                machine->AdvancePC();
+                break;
+            }
+            case SC_Help: {
+                printf("----------------------------------------------\n");
+                printf("exec [-userprog] : execute user program\n");
+                printf("pwd : print current path\n");
+                printf("ls : list the files and folders in current path\n");
+                printf("touch [-filename] : create a new file\n");
+                printf("mkdir [-dirname] : create a dir\n");
+                printf("rm [-filename] : delete a file\n");
+                printf("rmdir [-dirname] : delete a directory\n");
+                printf("uptime : print the system statistics up to now\n");
+                printf("help/? : print the help information\n");
+                printf("exit/quit : exit or quit the shell program\n");
+                printf("halt : halt Nachos machine\n");
+                printf("----------------------------------------------\n");
+                machine->AdvancePC();
+                break;
+            }
+            case SC_Uptime: {
+                stats->Print();
                 machine->AdvancePC();
                 break;
             }

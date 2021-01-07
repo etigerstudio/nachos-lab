@@ -33,6 +33,8 @@ extern Timer *timer;				// the hardware alarm clock
 extern int incrementalTID;
 extern Thread *allThreads[MAX_THREAD_COUNT];
 
+extern bool VERBOSE;
+
 #ifdef USER_PROGRAM
 #include "machine.h"
 extern Machine* machine;	// user program memory and registers

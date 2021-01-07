@@ -38,6 +38,7 @@ Thread::Thread(char* threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+    cwd = "/";
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -65,6 +66,7 @@ Thread::~Thread()
 
     ASSERT(this != currentThread);
     removeFromThreads();
+    delete cwd;
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }

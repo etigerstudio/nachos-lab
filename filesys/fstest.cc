@@ -38,8 +38,8 @@ Copy(char *from, char *to)
 
 // Open UNIX file
     if ((fp = fopen(from, "r")) == NULL) {	 
-	printf("Copy: couldn't open input file %s\n", from);
-	return;
+        printf("Copy: couldn't open input file %s\n", from);
+        return;
     }
 
 // Figure out length of UNIX file
@@ -50,9 +50,9 @@ Copy(char *from, char *to)
 // Create a Nachos file of the same length
     DEBUG('f', "Copying file %s, size %d, to file %s\n", from, fileLength, to);
     if (!fileSystem->Create(to, fileLength)) {	 // Create Nachos file
-	printf("Copy: couldn't create output file %s\n", to);
-	fclose(fp);
-	return;
+        printf("Copy: couldn't create output file %s\n", to);
+        fclose(fp);
+        return;
     }
     
     openFile = fileSystem->Open(to);
@@ -111,7 +111,8 @@ Print(char *name)
 #define FileName 	"TestFile"
 #define Contents 	"1234567890"
 #define ContentSize 	strlen(Contents)
-#define FileSize 	((int)(ContentSize * 5000))
+// #define FileSize 	((int)(ContentSize * 5000))
+#define FileSize 	((int)(ContentSize * 10))
 
 static void 
 FileWrite()
@@ -127,16 +128,16 @@ FileWrite()
     }
     openFile = fileSystem->Open(FileName);
     if (openFile == NULL) {
-	printf("Perf test: unable to open %s\n", FileName);
-	return;
+        printf("Perf test: unable to open %s\n", FileName);
+        return;
     }
     for (i = 0; i < FileSize; i += ContentSize) {
         numBytes = openFile->Write(Contents, ContentSize);
-	if (numBytes < 10) {
-	    printf("Perf test: unable to write %s\n", FileName);
-	    delete openFile;
-	    return;
-	}
+        if (numBytes < 10) {
+            printf("Perf test: unable to write %s\n", FileName);
+            delete openFile;
+            return;
+        }
     }
     delete openFile;	// close file
 }
@@ -152,18 +153,18 @@ FileRead()
 	FileSize, ContentSize);
 
     if ((openFile = fileSystem->Open(FileName)) == NULL) {
-	printf("Perf test: unable to open file %s\n", FileName);
-	delete [] buffer;
-	return;
+        printf("Perf test: unable to open file %s\n", FileName);
+        delete [] buffer;
+        return;
     }
     for (i = 0; i < FileSize; i += ContentSize) {
         numBytes = openFile->Read(buffer, ContentSize);
-	if ((numBytes < 10) || strncmp(buffer, Contents, ContentSize)) {
-	    printf("Perf test: unable to read %s\n", FileName);
-	    delete openFile;
-	    delete [] buffer;
-	    return;
-	}
+        if ((numBytes < 10) || strncmp(buffer, Contents, ContentSize)) {
+            printf("Perf test: unable to read %s\n", FileName);
+            delete openFile;
+            delete [] buffer;
+            return;
+        }
     }
     delete [] buffer;
     delete openFile;	// close file
@@ -183,3 +184,83 @@ PerformanceTest()
     stats->Print();
 }
 
+// fstest.cc
+// 调用文件系统功能，创建目录
+void MkDir(char *dirname)
+{
+    DEBUG('D',"Making directory: %s\n", dirname);
+    fileSystem->Create(dirname, -1);
+}
+
+// fstest.cc
+void write() {
+    OpenFile *openFile;
+    int i, numBytes;
+    if (!fileSystem->Create(FileName, 0)) {
+      printf("Perf test: can't create %s\n", FileName);
+      return ;
+    }
+    openFile = fileSystem->Open(FileName);
+    if (openFile == NULL) {
+        printf("Perf test: unable to open %s\n", FileName);
+        return ;
+    }
+    printf("begin writing\n");
+    numBytes=openFile->Write(Contents, ContentSize);
+    printf("end writing\n");
+    delete openFile;    // close file
+}
+
+void read(int which)
+{
+    printf("%s start\n",currentThread->getName());
+    OpenFile *openFile;
+    char *buffer = new char[ContentSize+1];
+    int i,numBytes;
+    if((openFile=fileSystem->Open(FileName)) == NULL){
+        printf("Perf test: unable to Open file %s\n",FileName);
+        delete [] buffer;
+        return;
+    }
+    printf("begin reading\n");
+    printf("%s's size is %d\n", FileName, openFile->Length());
+    numBytes = openFile->Read(buffer, ContentSize);
+    printf("read %d bytes\n", numBytes);
+    buffer[ContentSize]='\0';
+    printf("read Content: %s\n", buffer);
+    printf("end reading\n");
+    delete [] buffer;
+    delete openFile;
+    if (!fileSystem->Remove(FileName)) {
+      printf("Perf test: unable to remove %s\n", FileName);
+      return;
+    }
+}
+
+void
+PerformanceTest1()
+{
+    printf("Starting file system performance test:\n");
+    Thread* thread1 = new Thread("reader1");
+    thread1->Fork(read, 7);
+    write();
+}
+
+// fstest.cc
+void PerformanceTest4()
+{
+    printf("thread 1 wrte data to the pipe\n");
+    char input_str[SectorSize+1];
+    printf("input: ");
+    scanf("%s", input_str);
+    fileSystem->WritePipe(input_str, strlen(input_str));
+}
+
+void PerformanceTest5()
+{
+    printf("thread 2 read data from the pipe\n");
+    char data[SectorSize+1];
+    int length = fileSystem->ReadPipe(data);
+    data[length] = '\0';
+    printf("%s\n", data);
+}

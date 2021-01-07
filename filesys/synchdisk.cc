@@ -45,6 +45,12 @@ SynchDisk::SynchDisk(char* name)
     semaphore = new Semaphore("synch disk", 0);
     lock = new Lock("synch disk lock");
     disk = new Disk(name, DiskRequestDone, (int) this);
+
+    readerLock = new Lock("ReaderLock");
+    for (int i = 0; i < NumSectors; i ++) {
+        numReaders[i] = 0;
+        mutex[i] = new Semaphore("Lock", 1);
+    }
 }
 
 //----------------------------------------------------------------------
@@ -58,6 +64,10 @@ SynchDisk::~SynchDisk()
     delete disk;
     delete lock;
     delete semaphore;
+    delete readerLock;
+    for (int i = 0; i < NumSectors; i ++) {
+        delete mutex[i];
+    }
 }
 
 //----------------------------------------------------------------------
@@ -106,4 +116,39 @@ void
 SynchDisk::RequestDone()
 { 
     semaphore->V();
+}
+
+// 读者读时申请锁
+void 
+SynchDisk::PlusReader(int sector) {
+    readerLock->Acquire();
+    numReaders[sector] ++;
+    if (numReaders[sector] == 1) {
+        mutex[sector]->P();
+    }
+    // printf("reader cnt: %d\n", numReaders[sector]);
+    readerLock->Release();
+}
+
+// 读者结束读时释放锁
+void
+SynchDisk::MinusReader(int sector) {
+    readerLock->Acquire();
+    numReaders[sector]--;
+    if (numReaders[sector] == 0) {
+        mutex[sector]->V();
+    }
+    readerLock->Release();
+}
+
+//写者开始写时申请锁
+void
+SynchDisk::BeginWrite(int sector) {
+    mutex[sector]->P();
+}
+
+//写者结束写时释放锁
+void
+SynchDisk::EndWrite(int sector) {
+    mutex[sector]->V();
 }

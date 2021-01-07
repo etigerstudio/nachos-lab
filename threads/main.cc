@@ -64,6 +64,16 @@ extern void Print(char *file), PerformanceTest(void);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
 
+// 使用extern关键字声明MkDir函数
+extern void MkDir(char* dirname);
+extern void SynchConsoleTest(char *in, char *out);
+
+extern void PerformanceTest1();
+extern void PerformanceTest4();
+extern void PerformanceTest5();
+
+bool VERBOSE = TRUE;
+
 //----------------------------------------------------------------------
 // main
 // 	Bootstrap the operating system kernel.  
@@ -86,7 +96,7 @@ main(int argc, char **argv)
 
     DEBUG('t', "Entering main");
     (void) Initialize(argc, argv);
-    
+
 #ifdef THREADS
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount) {
       argCount = 1;
@@ -108,6 +118,9 @@ main(int argc, char **argv)
 	argCount = 1;
         if (!strcmp(*argv, "-z"))               // print copyright
             printf (copyright);
+		if (!strcmp(*argv, "-Q")) {
+			VERBOSE = FALSE;
+		}
 #ifdef USER_PROGRAM
         if (!strcmp(*argv, "-x")) {        	// run a user program
 	    ASSERT(argc > 1);
@@ -140,11 +153,32 @@ main(int argc, char **argv)
 	    fileSystem->Remove(*(argv + 1));
 	    argCount = 2;
 	} else if (!strcmp(*argv, "-l")) {	// list Nachos directory
-            fileSystem->List();
+        fileSystem->List();
 	} else if (!strcmp(*argv, "-D")) {	// print entire filesystem
-            fileSystem->Print();
+        fileSystem->Print();
 	} else if (!strcmp(*argv, "-t")) {	// performance test
-            PerformanceTest();
+        PerformanceTest();
+	} else if (!strcmp(*argv, "-t1")) {
+		PerformanceTest1();
+	} else if (!strcmp(*argv, "-t4")) {
+		PerformanceTest4();
+	} else if (!strcmp(*argv, "-t5")) {
+		PerformanceTest5();
+	} 
+	else if (!strcmp(*argv, "-mkdir")) {
+		ASSERT(argc > 1);
+		// 调用函数，实现创建目录的功能
+		MkDir(*(argv + 1));
+		argCount = 2;
+	} else if (!strcmp(*argv, "-rd")) {
+		// remove Nachos file or directory recursively (i.e. rm -r in UNIX)
+		ASSERT(argc > 1);
+		bool success = fileSystem->RemoveDir(*(argv + 1));
+		argCount = 2;
+	} else if (!strcmp(*argv, "-ld")) {
+		ASSERT(argc > 1);
+		fileSystem->ListDir(*(argv + 1));
+		argCount = 2;
 	}
 #endif // FILESYS
 #ifdef NETWORK

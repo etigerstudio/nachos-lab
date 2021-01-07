@@ -130,6 +130,70 @@ Yield:
 	j	$31
 	.end Yield
 
+	.globl Pwd
+	.ent	Pwd
+Pwd:
+	addiu $2,$0,SC_Pwd
+	syscall
+	j	$31
+	.end Pwd
+
+	.globl Ls
+	.ent	Ls
+Ls:
+	addiu $2,$0,SC_Ls
+	syscall
+	j	$31
+	.end Ls
+
+	.globl Cd
+	.ent	Cd
+Cd:
+	addiu $2,$0,SC_Cd
+	syscall
+	j	$31
+	.end Cd
+
+	.globl MkDir
+	.ent	MkDir
+MkDir:
+	addiu $2,$0,SC_MkDir
+	syscall
+	j	$31
+	.end MkDir
+
+	.globl RmDir
+	.ent	RmDir
+RmDir:
+	addiu $2,$0,SC_RmDir
+	syscall
+	j	$31
+	.end RmDir
+
+	.globl Remove
+	.ent	Remove
+Remove:
+	addiu $2,$0,SC_Remove
+	syscall
+	j	$31
+	.end Remove
+
+	.globl Help
+	.ent	Help
+Help:
+	addiu $2,$0,SC_Help
+	syscall
+	j	$31
+	.end Help
+
+	.globl Uptime
+	.ent	Uptime
+Uptime:
+	addiu $2,$0,SC_Uptime
+	syscall
+	j	$31
+	.end Uptime
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

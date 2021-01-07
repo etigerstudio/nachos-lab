@@ -111,7 +111,7 @@ Directory::Find(char *name)
     int i = FindIndex(name);
 
     if (i != -1)
-	return table[i].sector;
+	    return table[i].sector;
     return -1;
 }
 
