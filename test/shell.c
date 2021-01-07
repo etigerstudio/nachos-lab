@@ -46,9 +46,9 @@ main()
         buffer[--i] = '\0';
 
         if( i > 0 ) {
-            Write("Read command: ", 15, output);
-            Write(buffer, i, output);
-            Write("\n", 2, output);
+            // Write("Read command: ", 15, output);
+            // Write(buffer, i, output);
+            // Write("\n", 2, output);
             if (!strcmp("help", buffer) || !strcmp("?", buffer)) {
                 Help();
             }
@@ -56,37 +56,41 @@ main()
                 Write("GoodBye!\n", 10, output);
                 Exit(0);
             } else if (!strcmp("halt", buffer)) {
-                Write("System Shut Down\n", 18, output);
+                Write("System Shut Down!\n", 18, output);
                 Halt();
             } else if (!strcmp("pwd", buffer)) {
                 Pwd();
             } else if (!strcmp("ls", buffer)) {
                 Ls();
             } else if (!strncmp("cd", buffer, 2)) {
-                Write((buffer + 3), 20, output);
-                Write("\n", 2, output);
-                // Cd((buffer + 3));
+                // Write((buffer + 3), 20, output);
+                // Write("\n", 2, output);
+                Cd((buffer + 3));
             } else if (!strncmp("touch", buffer, 5)) {
-                Write((buffer + 6), 20, output);
-                Write("\n", 2, output);
-                // Create((buffer + 6));
+                // Write((buffer + 6), 20, output);
+                // Write("\n", 2, output);
+                Create((buffer + 6));
             } else if (!strncmp("mkdir", buffer, 5)) {
-                Write((buffer + 6), 20, output);
-                Write("\n", 2, output);
-                // MkDir((buffer + 6));
+                // Write((buffer + 6), 20, output);
+                // Write("\n", 2, output);
+                MkDir((buffer + 6));
             } else if (!strncmp("rm", buffer, 2)) {
-                Write((buffer + 3), 20, output);
-                Write("\n", 2, output);
-                // Remove((buffer + 3));
+                // Write((buffer + 3), 20, output);
+                // Write("\n", 2, output);
+                Remove((buffer + 3));
             } else if (!strncmp("rmdir", buffer, 2)) {
-                Write((buffer + 6), 20, output);
-                Write("\n", 2, output);
-                // RmDir((buffer + 6));
+                // Write((buffer + 6), 20, output);
+                // Write("\n", 2, output);
+                RmDir((buffer + 6));
             } else if (!strncmp("uptime", buffer, 6)) {
                 Uptime();
-            } else {
-                newProc = Exec(buffer);
+            } else if (!strncmp("exec", buffer, 4)){
+                // Write((buffer + 5), 20, output);
+                // Write("\n", 2, output);
+                newProc = Exec((buffer + 5));
                 Join(newProc);
+            } else {
+                Write("Unsupported command! Try help or ? for support\n", 48, output);
             }
         }
     }

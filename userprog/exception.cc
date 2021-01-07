@@ -274,19 +274,20 @@ ExceptionHandler(ExceptionType which) {
                 break;
             }
             case SC_Help: {
-                printf("----------------------------------------------\n");
-                printf("exec [-userprog] : execute user program\n");
-                printf("pwd : print current path\n");
-                printf("ls : list the files and folders in current path\n");
-                printf("touch [-filename] : create a new file\n");
-                printf("mkdir [-dirname] : create a dir\n");
-                printf("rm [-filename] : delete a file\n");
-                printf("rmdir [-dirname] : delete a directory\n");
-                printf("uptime : print the system statistics up to now\n");
-                printf("help/? : print the help information\n");
-                printf("exit/quit : exit or quit the shell program\n");
-                printf("halt : halt Nachos machine\n");
-                printf("----------------------------------------------\n");
+                printf(COLORED(OKGREEN, "------------------------------[Nachos Shell Help]---------------------------------\n"));
+                printf(COLORED(OKBLUE, "exec [-userprog] :\texecute user program\n"));
+                // printf("\texecute user program\n");
+                printf(COLORED(OKBLUE, "pwd : \t\t\tprint current path\n"));
+                printf(COLORED(OKBLUE, "ls : \t\t\tlist the files and folders in current path\n"));
+                printf(COLORED(OKBLUE, "touch [-filename] : \tcreate a new file\n"));
+                printf(COLORED(OKBLUE, "mkdir [-dirname] : \tcreate a dir\n"));
+                printf(COLORED(OKBLUE, "rm [-filename] : \tdelete a file\n"));
+                printf(COLORED(OKBLUE, "rmdir [-dirname] : \tdelete a directory\n"));
+                printf(COLORED(OKBLUE, "uptime : \t\tprint the system statistics up to now\n"));
+                printf(COLORED(OKBLUE, "help/? : \t\tprint the help information\n"));
+                printf(COLORED(OKBLUE, "exit/quit : \t\texit or quit the shell program\n"));
+                printf(COLORED(OKBLUE, "halt : \t\t\thalt Nachos machine\n"));
+                printf(COLORED(OKGREEN, "----------------------------------[Help End ]--------------------------------------\n"));
                 machine->AdvancePC();
                 break;
             }
