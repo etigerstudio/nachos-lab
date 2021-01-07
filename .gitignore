@@ -3,3 +3,6 @@
 
 *.out
 *.o
+nachos
+
+.vscode
